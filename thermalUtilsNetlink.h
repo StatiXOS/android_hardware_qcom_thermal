@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -28,9 +28,15 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THERMAL_THERMAL_COMMON_H__
-#define THERMAL_THERMAL_COMMON_H__
+#ifndef THERMAL_THERMAL_UTILS_H__
+#define THERMAL_THERMAL_UTILS_H__
 
+#include <unordered_map>
+#include <mutex>
+#include <android/hardware/thermal/2.0/IThermal.h>
+#include "thermalConfig.h"
+#include "thermalMonitorNetlink.h"
+#include "thermalCommon.h"
 #include "thermalData.h"
 
 namespace android {
@@ -39,41 +45,43 @@ namespace thermal {
 namespace V2_0 {
 namespace implementation {
 
-#define RETRY_CT 3
+using ueventCB = std::function<void(Temperature &t)>;
 
-class ThermalCommon {
+class ThermalUtils {
 	public:
-		ThermalCommon();
-		~ThermalCommon() = default;
-
-		int readFromFile(std::string_view path, std::string& out);
-		int initThermalZones(std::vector<struct target_therm_cfg>& cfg);
-		void initThreshold(struct therm_sensor& sens);
-		int initCdev();
-
-		int read_cdev_state(struct therm_cdev& cdev);
-		int read_temperature(struct therm_sensor& sensor);
-		int estimateSeverity(struct therm_sensor& sensor);
-		int get_cpu_usages(hidl_vec<CpuUsage>& list);
-
-		std::vector<struct therm_sensor> fetch_sensor_list()
+		ThermalUtils(const ueventCB &inp_cb);
+		~ThermalUtils() = default;
+		bool isSensorInitialized()
 		{
-			return sens;
+			return is_sensor_init;
 		};
-		std::vector<struct therm_cdev> fetch_cdev_list()
+		bool isCdevInitialized()
 		{
-			return cdev;
+			return is_cdev_init;
 		};
-
+		int readTemperatures(hidl_vec<Temperature_1_0>& temp);
+		int readTemperatures(bool filterType, TemperatureType type,
+                                            hidl_vec<Temperature>& temperatures);
+		int readTemperatureThreshold(bool filterType, TemperatureType type,
+                                            hidl_vec<TemperatureThreshold>& thresh);
+		int readCdevStates(bool filterType, cdevType type,
+                                            hidl_vec<CoolingDevice>& cdev);
+		int fetchCpuUsages(hidl_vec<CpuUsage>& cpu_usages);
 	private:
-		int ncpus;
-		std::vector<struct target_therm_cfg> cfg;
-		std::vector<struct therm_sensor> sens;
-		std::vector<struct therm_cdev> cdev;
+		bool is_sensor_init;
+		bool is_cdev_init;
+		ThermalConfig cfg;
+		ThermalCommon cmnInst;
+		ThermalMonitor monitor;
+		std::unordered_map<int, struct therm_sensor>
+			thermalConfig;
+		std::vector<struct therm_cdev> cdevList;
+		std::mutex sens_cb_mutex;
+		ueventCB cb;
 
-		int initializeCpuSensor(struct target_therm_cfg& cpu_cfg);
-		int initialize_sensor(struct target_therm_cfg& cfg,
-					int sens_idx);
+		void eventParse(int tzn, int trip);
+		void sampleParse(int tzn, int temp);
+		void Notify(struct therm_sensor& sens);
 };
 
 }  // namespace implementation
@@ -82,4 +90,4 @@ class ThermalCommon {
 }  // namespace hardware
 }  // namespace android
 
-#endif  // THERMAL_THERMAL_COMMON_H__
+#endif  // THERMAL_THERMAL_UTILS_H__

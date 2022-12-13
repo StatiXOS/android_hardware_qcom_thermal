@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2020,2021 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -26,6 +26,38 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Changes from Qualcomm Innovation Center are provided under the following license:
+ *
+ * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *	* Redistributions of source code must retain the above copyright
+ *	  notice, this list of conditions and the following disclaimer.
+ *	* Redistributions in binary form must reproduce the above
+ *	  copyright notice, this list of conditions and the following
+ *	  disclaimer in the documentation and/or other materials provided
+ *	  with the distribution.
+ *	* Neither the name of Qualcomm Innovation Center, Inc. nor the
+ *	  names of its contributors may be used to endorse or promote products
+ *	  derived from this software without specific prior written permission.
+ *
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED
+ * BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
+ * AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <unordered_map>
@@ -674,6 +706,474 @@ namespace implementation {
 		},
 	};
 
+	std::vector<std::string> cpu_sensors_waipio =
+	{
+		"cpu-0-0",
+		"cpu-0-1",
+		"cpu-0-2",
+		"cpu-0-3",
+		"cpu-1-0",
+		"cpu-1-2",
+		"cpu-1-4",
+		"cpu-1-6",
+	};
+
+	std::vector<struct target_therm_cfg>  waipio_common = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_waipio,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-0" },
+			"nsp0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-1" },
+			"nsp1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-2" },
+			"nsp2",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+	};
+
+	std::vector<struct target_therm_cfg>  diwali_common = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_waipio,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-0" },
+			"nsp0",
+			95000,
+			115000,
+			95000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-1" },
+			"nsp1",
+			95000,
+			115000,
+			95000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-2" },
+			"nsp2",
+			95000,
+			115000,
+			95000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+	};
+
+	std::vector<struct target_therm_cfg>  waipio_specific = {
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm8350b-ibat-lvl0" },
+			"ibat",
+			6000,
+			7500,
+			6000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "xo-therm" },
+			"skin",
+			55000,
+			95000,
+			55000,
+			true,
+		},
+	};
+
+	std::vector<struct target_therm_cfg>  diwali_specific = {
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm7250b-ibat-lvl0" },
+			"ibat",
+			9000,
+			9500,
+			9000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "quiet-therm" },
+			"skin",
+			46000,
+			95000,
+			46000,
+			true,
+			ThrottlingSeverity::LIGHT,
+		},
+	};
+
+	std::vector<std::string> cpu_sensors_neo =
+	{
+		"cpu-0-0",
+		"cpu-0-1",
+		"cpu-0-2",
+		"cpu-0-3",
+	};
+
+	std::vector<struct target_therm_cfg>  neo_common = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_neo,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-0" },
+			"nsp0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-1" },
+			"nsp1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-2" },
+			"nsp2",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+	};
+
+	std::vector<std::string> cpu_sensors_parrot =
+	{
+		"cpu-0-0",
+		"cpu-0-1",
+		"cpu-0-2",
+		"cpu-0-3",
+		"cpu-1-0",
+		"cpu-1-2",
+		"cpu-1-4",
+		"cpu-1-6",
+	};
+
+	std::vector<struct target_therm_cfg>  parrot_common = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_parrot,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-0" },
+			"nsp0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-1" },
+			"nsp1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+	};
+
+	std::vector<struct target_therm_cfg>  parrot_specific = {
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm7250b-ibat-lvl0" },
+			"ibat",
+			6000,
+			7500,
+			6000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "xo-therm" },
+			"skin",
+			55000,
+			95000,
+			55000,
+			true,
+		},
+	};
+
+	std::vector<std::string> cpu_sensors_anorak =
+	{
+		"cpu-0-0-0",
+		"cpu-0-0-1",
+		"cpu-0-1-0",
+		"cpu-0-1-1",
+		"cpu-1-0-0",
+		"cpu-1-0-1",
+		"cpu-1-1-0",
+		"cpu-1-1-1",
+		"cpu-1-2-0",
+		"cpu-1-2-1",
+		"cpu-1-3-0",
+		"cpu-1-3-1",
+	};
+
+	std::vector<struct target_therm_cfg>  anorak_common = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_anorak,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-0" },
+			"nsp0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-1" },
+			"nsp1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-2" },
+			"nsp2",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-2" },
+			"GPU2",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-3" },
+			"GPU3",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-4" },
+			"GPU4",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-5" },
+			"GPU5",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-6" },
+			"GPU6",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-7" },
+			"GPU7",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+	};
+	std::vector<struct target_therm_cfg>  anorak_specific = {
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm8550b-ibat-lvl0" },
+			"ibat",
+			9000,
+			10000,
+			9000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "sys-therm-0" },
+			"skin",
+			55000,
+			95000,
+			55000,
+			true,
+		},
+	};
+
 	struct target_therm_cfg bat_conf = {
 		TemperatureType::BATTERY,
 		{ "battery" },
@@ -739,6 +1239,19 @@ namespace implementation {
 		{454, sensor_cfg_holi}, // holi
 		{475, sensor_cfg_yupik}, // yupik
 		{515, sensor_cfg_yupik}, // YUPIK-LTE
+		{457, waipio_common}, //Waipio
+		{482, waipio_common}, //Waipio
+		{552, waipio_common}, //Waipio-LTE
+		{506, diwali_common}, //diwali
+		{547, diwali_common}, //diwali
+		{564, diwali_common}, //diwali-LTE
+		{530, waipio_common}, // cape
+		{531, waipio_common}, // cape
+		{540, waipio_common}, // cape
+		{525, neo_common},
+		{554, neo_common},
+		{537, parrot_common},
+		{549, anorak_common},
 	};
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>
@@ -750,6 +1263,17 @@ namespace implementation {
 		{501, lahaina_specific},
 		{502, lahaina_specific},
 		{450, shima_specific}, // shima
+		{457, waipio_specific}, //Waipio
+		{482, waipio_specific}, //Waipio
+		{552, waipio_specific}, //Waipio-LTE
+		{506, diwali_specific}, //diwali
+		{547, diwali_specific}, //diwali
+		{564, diwali_specific}, //diwali-LTE
+		{530, waipio_specific}, // cape
+		{531, waipio_specific}, // cape
+		{540, waipio_specific}, // cape
+		{537, parrot_specific},
+		{549, anorak_specific},
 	};
 
 	std::vector<struct target_therm_cfg> add_target_config(
@@ -773,12 +1297,24 @@ namespace implementation {
 		std::vector<struct target_therm_cfg>::iterator it_vec;
 		bool bcl_defined = false;
 		std::string soc_val;
+		int ct = 0;
+		bool read_ok = false;
 
-		if (cmnInst.readFromFile(socIDPath, soc_val) <= 0) {
-			LOG(ERROR) <<"soc ID fetch error";
-			return;
-		}
-		soc_id = std::stoi(soc_val, nullptr, 0);
+		do {
+			if (cmnInst.readFromFile(socIDPath, soc_val) <= 0) {
+				LOG(ERROR) <<"soc ID fetch error";
+				return;
+			}
+			try {
+				soc_id = std::stoi(soc_val, nullptr, 0);
+				read_ok = true;
+			}
+			catch (std::exception &err) {
+				LOG(ERROR) <<"soc id stoi err:" << err.what()
+					<< " buf:" << soc_val;
+			}
+			ct++;
+		} while (!read_ok && ct < RETRY_CT);
 		if (soc_id <= 0) {
 			LOG(ERROR) << "Invalid soc ID: " << soc_id;
 			return;
