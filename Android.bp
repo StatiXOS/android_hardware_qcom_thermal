@@ -63,9 +63,9 @@ cc_binary {
 		"android.hardware.thermal@2.0",
 	],
 	header_libs: [
+		"device_kernel_headers",
 		"liblog_headers",
 		"libcutils_headers",
-		"qti_kernel_headers"
 	],
 	cflags: [
 		"-Wno-unused-parameter",
